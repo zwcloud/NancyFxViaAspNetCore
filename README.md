@@ -1,5 +1,5 @@
 # NancyFx via ASP.NET Core
-A template project that Use [NancyFx 1.4.4 routing](https://github.com/NancyFx/Nancy/wiki/Defining-routes) instead of regular MVC.
+An ASP.NET Core 3.1 template project that uses [NancyFx 1.4.4 routing](https://github.com/NancyFx/Nancy/wiki/Defining-routes) instead of regular MVC.
 
 # Why
 I'd grown to like routing in NancyFx before v1.4.4:
