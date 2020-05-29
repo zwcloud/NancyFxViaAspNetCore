@@ -28,3 +28,13 @@ public class SampleModule : Nancy.NancyModule
 ```
 
 But since [NancyFx has been discontinued](https://github.com/NancyFx/Nancy/issues/3010), I decided to implement similar routing inside ASP.NET Core instead.
+
+# Run
+
+```bat
+git clone https://github.com/zwcloud/NancyFxViaAspNetCore.git
+cd .\NancyFxViaAspNetCore
+dotnet run
+```
+
+Then in your webbrowser, input `http://localhost:5000` and enter.
