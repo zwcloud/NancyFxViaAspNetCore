@@ -20,13 +20,13 @@ namespace Nancy
                 return View["Main", context, viewData];
             };
 
-            Get["/Home/", true] = async (context, p) =>
+            Get["/DateTime/", true] = async (context, p) =>
             {
                 var viewData = new ViewDataDictionary(
                     new EmptyModelMetadataProvider(), new ModelStateDictionary());
                 viewData["DateTime"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
-                return await View["Home/Index", context, viewData, true];
+                return await View["Home/DateTime", context, viewData, true];
             };
         }
     }
