@@ -11,11 +11,10 @@ namespace Nancy
         {
             Get["Hello"] = (context, p) => "Hello World!";
 
-            Get["/", true] = async (context, p) =>
+            Get["/"] = (context, p) =>
             {
                 var viewData = new ViewDataDictionary(
                     new EmptyModelMetadataProvider(), new ModelStateDictionary());
-                viewData["CurrentDateTime"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
                 viewData["Title"] = "NancyFx via ASP.NET Core 3.1";
 
                 return View["Main", context, viewData];
@@ -25,9 +24,9 @@ namespace Nancy
             {
                 var viewData = new ViewDataDictionary(
                     new EmptyModelMetadataProvider(), new ModelStateDictionary());
-                viewData["Time"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                viewData["DateTime"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
-                return View["Home/Index", context, viewData];
+                return await View["Home/Index", context, viewData, true];
             };
         }
     }

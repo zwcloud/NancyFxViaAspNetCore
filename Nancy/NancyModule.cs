@@ -21,36 +21,53 @@ namespace Nancy
 {
     public class ViewRenderer
     {
-        public ContentResult this[string viewName, HttpContext context, ViewDataDictionary viewDictionary]
+        private Task<ContentResult> RenderAsync(string viewName, HttpContext context, ViewDataDictionary viewDictionary)
         {
-            get
+            var stringWriter = new StringWriter();
+
+            var actionContext =
+                new ActionContext(context, new RouteData(), new ActionDescriptor());
+            var razorViewEngine = context.RequestServices.GetService<IRazorViewEngine>();
+
+            ViewEngineResult viewEngineResult =
+                razorViewEngine.FindView(actionContext, viewName, true);
+            if (viewEngineResult.View == null)
             {
-                using var stringWriter = new StringWriter();
+                throw new InvalidOperationException($"No view<{viewName}> exists");
+            }
 
-                var actionContext =
-                    new ActionContext(context, new RouteData(), new ActionDescriptor());
-                var razorViewEngine = context.RequestServices.GetService<IRazorViewEngine>();
+            var viewContext = new ViewContext(actionContext, viewEngineResult.View, viewDictionary,
+                new TempDataDictionary(actionContext.HttpContext,
+                    context.RequestServices.GetService<ITempDataProvider>()),
+                stringWriter, new HtmlHelperOptions());
 
-                ViewEngineResult viewEngineResult =
-                    razorViewEngine.FindView(actionContext, viewName, true);
-                if (viewEngineResult.View == null)
-                {
-                    throw new InvalidOperationException($"No view<{viewName}> exists");
-                }
+            var task = viewEngineResult.View.RenderAsync(viewContext);
 
-                var viewContext = new ViewContext(actionContext, viewEngineResult.View, viewDictionary,
-                    new TempDataDictionary(actionContext.HttpContext,
-                        context.RequestServices.GetService<ITempDataProvider>()),
-                    stringWriter, new HtmlHelperOptions());
-
-                viewEngineResult.View.RenderAsync(viewContext).Wait();
-
+            return task.ContinueWith(_ =>
+            {
                 var contentResult = new ContentResult();
                 contentResult.Content = stringWriter.ToString();
                 contentResult.ContentType = "text/html";
                 return contentResult;
+            });
+        }
+
+        public ContentResult this[string viewName, HttpContext context, ViewDataDictionary viewDictionary]
+        {
+            get
+            {
+                var task = RenderAsync(viewName, context, viewDictionary);
+                task.Wait();
+                return task.Result;
             }
         }
+        
+        public Task<ContentResult> this[
+            string viewName,
+            HttpContext context,
+            ViewDataDictionary viewDictionary,
+            bool IsAsync] =>
+            RenderAsync(viewName, context, viewDictionary);
     }
 
     /// <summary>
