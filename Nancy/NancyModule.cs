@@ -138,6 +138,22 @@ namespace Nancy
             Get = new RouteCollecter("GET", this);
             View = new ViewRenderer();
         }
+        
+        public static Task WriteActionResult(HttpContext context, string result)
+        {
+            var executor = context.RequestServices.GetRequiredService<IActionResultExecutor<ContentResult>>();
+
+            if (executor == null)
+            {
+                throw new InvalidOperationException($"No action result executor for {nameof(ContentResult)} registered.");
+            }
+
+            var routeData = context.GetRouteData() ?? new RouteData();
+            var actionContext = new ActionContext(context, routeData, new ActionDescriptor());
+            var contentResult = new ContentResult {Content = result, ContentType = "text/plain"};
+
+            return executor.ExecuteAsync(actionContext, contentResult);
+        }
 
         public static Task WriteActionResult<TResult>(HttpContext context, TResult result) where TResult : IActionResult
         {
@@ -178,7 +194,7 @@ namespace Nancy
                             }
                         }
 
-                        var result = route.func.Invoke(context, dic);
+                        dynamic result = route.func.Invoke(context, dic);
                         return WriteActionResult(context, result);
                     });
                 }
