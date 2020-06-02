@@ -13,6 +13,8 @@ namespace Nancy
         {
             Get["Hello"] = (context, p) => "Hello World!";
 
+            Get["Topics"] = (context, p) => Text("nancyfx, aspnet, aspnetcore");
+
             Get["/"] = (context, p) =>
             {
                 var viewData = new ViewDataDictionary(

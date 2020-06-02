@@ -223,28 +223,18 @@ namespace Nancy
             });
         }
 
-        //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-3.1#routing-basics
-
         public ViewRenderer View { get; }
-
-        public ViewDataDictionary ViewData { get; }
-            = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary());
-
-        public string MapPath(string relativePath)
-        {
-            return Path.Combine(env.ContentRootPath, relativePath);
-        }
 
         public JsonResult Json(object data)
         {
             return new JsonResult(data);
         }
 
-        public ContentResult Text(string text, string mimeType)
+        public ContentResult Text(string text)
         {
             var content = new ContentResult();
             content.Content = text;
-            content.ContentType = mimeType;
+            content.ContentType = "text/plain";
             return content;
         }
 
