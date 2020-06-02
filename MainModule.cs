@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Nancy;
 using System;
 using System.Globalization;
+using WebApp;
 
 namespace Nancy
 {
@@ -27,6 +29,12 @@ namespace Nancy
                 viewData["DateTime"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
                 return await View["Home/DateTime", context, viewData, true];
+            };
+
+            Get["/Projects"] = (context, p) =>
+            {
+                var projects = DBL.GetProjects();
+                return Json(projects);
             };
         }
     }
