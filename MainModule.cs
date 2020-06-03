@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Nancy;
 using System;
 using System.Globalization;
-using WebApp;
 
-namespace Nancy
+namespace WebApp
 {
     public class MainModule : NancyModule
     {

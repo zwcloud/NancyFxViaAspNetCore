@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -38,8 +41,34 @@ public class Startup
 
         app.UseAuthorization();
 
-        module.Configure(app, env);
+        foreach (var type in Modules)
+        {
+            var module = Activator.CreateInstance(type) as NancyModule;
+            module?.Configure(app, env);
+        }
+    }
+    
+    protected virtual IEnumerable<Type> Modules
+    {
+        get
+        {
+            if (this.modules != null)
+            {
+                return this.modules;
+            }
+            
+            var derivedTypes = new List<Type>();
+            foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var assemblyTypes = domainAssembly.GetTypes()
+                    .Where(type => type.IsSubclassOf(typeof(NancyModule)) && !type.IsAbstract);
+
+                derivedTypes.AddRange(assemblyTypes);
+            }
+            modules = derivedTypes.ToArray();
+            return this.modules;
+        }
     }
 
-    private readonly MainModule module = new MainModule();
+    private IEnumerable<Type> modules;
 }
