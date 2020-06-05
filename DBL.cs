@@ -7,16 +7,16 @@ namespace WebApp
     /// <summary>
     /// A dummy Database Layer
     /// </summary>
-    public class DBL
+    public static class DBL
     {
         public static List<Project> GetProjects()
         {
-            return dummyProjects;
+            return DummyProjects;
         }
 
         static DBL()
         {
-            dummyProjects = new List<Project>
+            DummyProjects = new List<Project>
             {
                 new Project
                 {
@@ -56,11 +56,11 @@ namespace WebApp
             };
         }
 
-        private static List<Project> dummyProjects;
+        private static readonly List<Project> DummyProjects;
 
         public static Project GetProject(int projectId)
         {
-            return dummyProjects.Find(p => p.Id == projectId);
+            return DummyProjects.Find(p => p.Id == projectId);
         }
     }
 }
