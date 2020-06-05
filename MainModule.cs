@@ -37,6 +37,13 @@ namespace WebApp
                 var projects = DBL.GetProjects();
                 return Json(projects);
             };
+
+            Get["Project/{id}"] = (context, p) =>
+            {
+                int projectId = p.id;
+                var project = DBL.GetProject(projectId);
+                return Json(project);
+            };
         }
     }
 }

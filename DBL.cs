@@ -57,5 +57,10 @@ namespace WebApp
         }
 
         private static List<Project> dummyProjects;
+
+        public static Project GetProject(int projectId)
+        {
+            return dummyProjects.Find(p => p.Id == projectId);
+        }
     }
 }
