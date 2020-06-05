@@ -38,3 +38,8 @@ dotnet run
 ```
 
 Then in your webbrowser, input `http://localhost:5000` and enter.
+
+# Usage
+
+![Usage](https://raw.githubusercontent.com/wiki/zwcloud/NancyFxViaAspNetCore/showcase.png)
+
