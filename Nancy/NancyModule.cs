@@ -170,10 +170,8 @@ namespace Nancy
             return executor.ExecuteAsync(actionContext, result);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            this.env = env;
-
             app.UseEndpoints((endpoints) =>
             {
                 foreach (var route in Routes)
@@ -238,8 +236,7 @@ namespace Nancy
             return content;
         }
 
-        private IWebHostEnvironment env;
-        public List<(string name, string path, Func<HttpContext, DynamicDictionary, dynamic> func)> Routes { get; }
-        public List<(string name, string path, Func<HttpContext, DynamicDictionary, Task<dynamic>> func)> AsyncRoutes { get; }
+        internal List<(string name, string path, Func<HttpContext, DynamicDictionary, dynamic> func)> Routes { get; }
+        internal List<(string name, string path, Func<HttpContext, DynamicDictionary, Task<dynamic>> func)> AsyncRoutes { get; }
     }
 }
