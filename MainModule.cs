@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Nancy;
+﻿using Nancy;
 using System;
 using System.Globalization;
 
@@ -16,8 +14,7 @@ namespace WebApp
 
             Get["/"] = (context, p) =>
             {
-                var viewData = new ViewDataDictionary(
-                    new EmptyModelMetadataProvider(), new ModelStateDictionary());
+                var viewData = GetViewData(context);
                 viewData["Title"] = "NancyFx via ASP.NET Core 3.1";
 
                 return View["Main", context, viewData];
@@ -25,8 +22,7 @@ namespace WebApp
 
             Get["/DateTime/", true] = async (context, p) =>
             {
-                var viewData = new ViewDataDictionary(
-                    new EmptyModelMetadataProvider(), new ModelStateDictionary());
+                var viewData = GetViewData(context);
                 viewData["DateTime"] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
                 return await View["Home/DateTime", context, viewData, true];

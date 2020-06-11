@@ -221,6 +221,17 @@ namespace Nancy
             });
         }
 
+        public ViewDataDictionary GetViewData(HttpContext context)
+        {
+            if (!context.Items.ContainsKey("ViewData"))
+            {
+                context.Items["ViewData"] = new ViewDataDictionary(
+                    new EmptyModelMetadataProvider(), new ModelStateDictionary());
+            }
+
+            return context.Items["ViewData"] as ViewDataDictionary;
+        }
+
         public ViewRenderer View { get; }
 
         public JsonResult Json(object data)
