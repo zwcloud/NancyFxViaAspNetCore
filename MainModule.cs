@@ -11,6 +11,26 @@ namespace WebApp
             Get["Hello"] = (context, p) => "Hello World!";
 
             Get["Topics"] = (context, p) => Text("nancyfx, aspnet, aspnetcore");
+            
+            Get["Rss"] = (context, p) => Text(
+@"<?xml version=""1.0"" encoding=""UTF-8"" ?>
+<rss version=""2.0"">
+<channel>
+  <title>Home Page</title>
+  <link>https://github.com/zwcloud</link>
+  <description>zwcloud's projects</description>
+  <item>
+    <title>ImGui</title>
+    <link>https://github.com/zwcloud/ImGui</link>
+    <description>Immediate Mode GUI for C#</description>
+  </item>
+  <item>
+    <title>Mesh Terrain Editor</title>
+    <link>https://assetstore.unity.com/packages/tools/terrain/mesh-terrain-editor-pro-57515</link>
+    <description>a mesh based terrain creator, converter and editor</description>
+  </item>
+</channel>
+</rss>", "application/xml");
 
             Get["/"] = (context, p) =>
             {

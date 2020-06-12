@@ -247,6 +247,14 @@ namespace Nancy
             content.ContentType = "text/plain";
             return content;
         }
+        
+        public ContentResult Text(string text, string contentType)
+        {
+            var content = new ContentResult();
+            content.Content = text;
+            content.ContentType = contentType;
+            return content;
+        }
 
         public FileStreamResult File(string filePath)
         {
