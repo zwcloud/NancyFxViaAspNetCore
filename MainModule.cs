@@ -44,7 +44,7 @@ namespace WebApp
             Get["File/{id}"] = (context, p) =>
             {
                 int fileId = p.id;
-                var filePath = $"files/{fileId}.txt";
+                var filePath = $"~/files/{fileId}.txt";
                 return File(filePath);
             };
         }

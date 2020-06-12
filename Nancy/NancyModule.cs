@@ -250,13 +250,30 @@ namespace Nancy
 
         public FileStreamResult File(string filePath)
         {
-            var fileName = System.IO.Path.GetFileName(filePath);
-            var absoluteFilePath = Path.Join(_env.WebRootPath, filePath);
+            var absoluteFilePath = MapPath(filePath);
+            var fileName = System.IO.Path.GetFileName(absoluteFilePath);
             var stream = System.IO.File.OpenRead(absoluteFilePath);
             return new FileStreamResult(stream, "application/octet-stream")
             {
                 FileDownloadName = fileName
             };
+        }
+
+        /// <summary>
+        /// Conver a tilde(~/) file path to absoulute file path.
+        /// </summary>
+        /// <param name="tildePath"></param>
+        /// <returns></returns>
+        public string MapPath(string tildePath)
+        {
+            if (!tildePath.StartsWith("~/"))
+            {
+                throw new InvalidOperationException("Cannot call MapPath on file path not started with \"~/\"");
+            }
+
+            var fileRelativePath = tildePath.Remove(0, 2);
+            var absoluteFilePath = Path.Join(_env.WebRootPath, fileRelativePath);
+            return absoluteFilePath;
         }
 
         internal List<(string name, string path, Func<HttpContext, DynamicDictionary, dynamic> func)> Routes { get; }
