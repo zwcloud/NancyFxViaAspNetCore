@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Nancy
 {
     public static class NancyRoutingApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseNancyRouting(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseNancyRouting(this IApplicationBuilder builder,
+            IWebHostEnvironment env)
         {
             foreach (var type in Modules)
             {
                 var module = Activator.CreateInstance(type) as NancyModule;
-                module?.Configure(builder);
+                module?.Configure(builder, env);
             }
 
             return builder;

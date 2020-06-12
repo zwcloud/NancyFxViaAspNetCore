@@ -170,8 +170,9 @@ namespace Nancy
             return executor.ExecuteAsync(actionContext, result);
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            this._env = env;
             app.UseEndpoints((endpoints) =>
             {
                 foreach (var route in Routes)
@@ -247,7 +248,20 @@ namespace Nancy
             return content;
         }
 
+        public FileStreamResult File(string filePath)
+        {
+            var fileName = System.IO.Path.GetFileName(filePath);
+            var absoluteFilePath = Path.Join(_env.WebRootPath, filePath);
+            var stream = System.IO.File.OpenRead(absoluteFilePath);
+            return new FileStreamResult(stream, "application/octet-stream")
+            {
+                FileDownloadName = fileName
+            };
+        }
+
         internal List<(string name, string path, Func<HttpContext, DynamicDictionary, dynamic> func)> Routes { get; }
         internal List<(string name, string path, Func<HttpContext, DynamicDictionary, Task<dynamic>> func)> AsyncRoutes { get; }
+        
+        private IWebHostEnvironment _env;
     }
 }

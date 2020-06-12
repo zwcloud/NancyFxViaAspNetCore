@@ -40,6 +40,13 @@ namespace WebApp
                 var project = DBL.GetProject(projectId);
                 return Json(project);
             };
+
+            Get["File/{id}"] = (context, p) =>
+            {
+                int fileId = p.id;
+                var filePath = $"files/{fileId}.txt";
+                return File(filePath);
+            };
         }
     }
 }

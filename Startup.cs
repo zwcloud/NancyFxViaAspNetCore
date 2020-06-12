@@ -41,6 +41,6 @@ public class Startup
 
         app.UseAuthorization();
 
-        app.UseNancyRouting();
+        app.UseNancyRouting(env);
     }
 }
