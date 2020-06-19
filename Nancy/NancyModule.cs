@@ -154,25 +154,33 @@ namespace Nancy
 
             return executor.ExecuteAsync(actionContext, contentResult);
         }
-
-        public static Task WriteActionResult<TResult>(HttpContext context, TResult result) where TResult : IActionResult
+        
+        public static Task WriteActionResult(HttpContext context, NotFoundResult result)
         {
-            var executor = context.RequestServices.GetRequiredService<IActionResultExecutor<TResult>>();
+            context.Response.StatusCode = result.StatusCode;
+            return context.Response.Body.FlushAsync();
+        }
 
-            if (executor == null)
-            {
-                throw new InvalidOperationException($"No action result executor for {typeof(TResult).FullName} registered.");
-            }
-
+        public static Task WriteActionResult<TResult>(HttpContext context, TResult result)
+            where TResult : IActionResult
+        {
             var routeData = context.GetRouteData() ?? new RouteData();
             var actionContext = new ActionContext(context, routeData, new ActionDescriptor());
-
+            var executor = context.RequestServices.GetRequiredService<IActionResultExecutor<TResult>>();
+        
+            if (executor == null)
+            {
+                throw new InvalidOperationException(
+                    $"No action result executor for {typeof(TResult).FullName} registered.");
+            }
+        
             return executor.ExecuteAsync(actionContext, result);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            this._env = env;
+            this.ContentRootPath = env.ContentRootPath ?? Directory.GetCurrentDirectory();
+
             app.UseEndpoints((endpoints) =>
             {
                 foreach (var route in Routes)
@@ -256,9 +264,22 @@ namespace Nancy
             return content;
         }
 
-        public FileStreamResult File(string filePath)
+        public IActionResult File(string filePath)
         {
-            var absoluteFilePath = MapPath(filePath);
+            string absoluteFilePath;
+            if (System.IO.Path.IsPathFullyQualified(filePath))
+            {
+                absoluteFilePath = filePath;
+            }
+            else
+            {
+                absoluteFilePath = Path.Join(ContentRootPath, filePath);
+            }
+
+            if (!System.IO.File.Exists(absoluteFilePath))
+            {
+                return new NotFoundResult();
+            }
             var fileName = System.IO.Path.GetFileName(absoluteFilePath);
             var stream = System.IO.File.OpenRead(absoluteFilePath);
             return new FileStreamResult(stream, "application/octet-stream")
@@ -267,26 +288,10 @@ namespace Nancy
             };
         }
 
-        /// <summary>
-        /// Conver a tilde(~/) file path to absoulute file path.
-        /// </summary>
-        /// <param name="tildePath"></param>
-        /// <returns></returns>
-        public string MapPath(string tildePath)
-        {
-            if (!tildePath.StartsWith("~/"))
-            {
-                throw new InvalidOperationException("Cannot call MapPath on file path not started with \"~/\"");
-            }
-
-            var fileRelativePath = tildePath.Remove(0, 2);
-            var absoluteFilePath = Path.Join(_env.WebRootPath, fileRelativePath);
-            return absoluteFilePath;
-        }
+        protected string ContentRootPath;
 
         internal List<(string name, string path, Func<HttpContext, DynamicDictionary, dynamic> func)> Routes { get; }
         internal List<(string name, string path, Func<HttpContext, DynamicDictionary, Task<dynamic>> func)> AsyncRoutes { get; }
         
-        private IWebHostEnvironment _env;
     }
 }
